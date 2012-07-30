@@ -7,7 +7,7 @@ var runCamera = function(channel) {
   socket.on('connect', function () {
     navigator.getUserMedia("video", function(stream) {
       camera.src = stream; 
-      var delay = 1;
+      var delay = 500;
       var run = function() {
       	setTimeout(function() {
           frame.drawImage(camera, 0, 0, camera.width, camera.height);
@@ -16,7 +16,7 @@ var runCamera = function(channel) {
           var rnd = function(max) {
             return Math.floor(Math.random() * (max + 1));
           };
-          delay = rnd(200) + rnd(200) + rnd(200) + rnd(200);
+          delay = rnd(200) + rnd(300) + rnd(400) + rnd(500);
           run();
         }, delay);
       };
