@@ -19,13 +19,19 @@ var runCamera = function(channel) {
           }
 
           var roll = Math.random();
-          if (roll < 0.2) {
+          if (roll < 0.1) {
             canvas.width = 25;
             canvas.height = 20;
+          } else if (roll < 0.2) {
+            canvas.width = 50;
+            canvas.height = 40;
           } else if (roll < 0.3) {
+            canvas.width = 100;
+            canvas.height = 80;
+          } else if (roll < 0.4) {
             canvas.width = 200;
             canvas.height = 160;
-          } else if (roll < 0.4) {
+          } else if (roll < 0.5) {
             canvas.width = 400;
             canvas.height = 320;
           } else if (roll < 0.8) {
