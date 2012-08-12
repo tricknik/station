@@ -45,13 +45,18 @@ var startChannel = function(channel) {
     user1 = socket;
     socket.on('frame', function (frame) {
       if (user2) {
-        user2.volatile.emit('frame', frame);
+        user2.emit('frame', frame);
       }
     });
     console.log("A LEG CONNECTED");
   });
   b.on('connection', function (socket) {
     user2 = socket
+    socket.on('ready', function () {
+      if (user1) {
+        user1.emit('ready');
+      }
+    });
     console.log("B LEG CONNECTED");
   });
 }
