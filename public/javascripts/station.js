@@ -8,15 +8,27 @@ var runCamera = function(channel) {
     navigator.getUserMedia("video", function(stream) {
       camera.src = stream; 
       var delay = 500;
+      var ratio = 0.5;
       var run = function() {
       	setTimeout(function() {
-          frame.drawImage(camera, 0, 0, camera.width, camera.height);
+          var newsize = function(size, min, max) {
+            var size = (size * Math.random()) + (size * Math.random()); 
+            if (size < min) size = max * 0.9;
+            if (size > max) size = min * 1.1;
+            return size;
+          }
+          if (Math.random() > 0.6) {
+            canvas.width = newsize(canvas.width, 5, 400);
+            canvas.height = newsize(canvas.height, 4, 320);
+          }
+          frame.drawImage(camera, 0, 0, canvas.width, canvas.height);
           var dataurl = canvas.toDataURL();
           socket.emit('frame', dataurl);
           var rnd = function(max) {
             return Math.floor(Math.random() * (max + 1));
           };
-          delay = rnd(200) + rnd(300) + rnd(400) + rnd(500);
+          delay = rnd(100) + rnd(200) + rnd(300) + rnd(400);
+          ratio = Math.random();
           run();
         }, delay);
       };
@@ -37,10 +49,11 @@ var runCamera = function(channel) {
 var runMonitor = function(channel) {
   var socket = io.connect('/channel/1/b');
 
-  var display = document.getElementById('display').getContext('2d');
+  var canvas = document.getElementById('display');
+  var display = canvas.getContext('2d');
   var imageObj = new Image();
   imageObj.onload = function() {
-    display.drawImage(this, 0, 0);
+    display.drawImage(this, 0, 0, canvas.width, canvas.height);
   };
   socket.on('connect', function() {
     socket.on('frame', function (dataURL) {
