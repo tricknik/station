@@ -17,10 +17,21 @@ var runCamera = function(channel) {
             if (size > max) size = min * 1.1;
             return size;
           }
-          if (Math.random() > 0.6) {
+
+          var roll = Math.random();
+          if (roll < 0.2) {
+            canvas.width = 25;
+            canvas.height = 20;
+          } else if (roll < 0.3) {
+            canvas.width = 200;
+            canvas.height = 160;
+          } else if (roll < 0.4) {
+            canvas.width = 400;
+            canvas.height = 320;
+          } else if (roll < 0.8) {
             canvas.width = newsize(canvas.width, 5, 400);
             canvas.height = newsize(canvas.height, 4, 320);
-          }
+	  }
           frame.drawImage(camera, 0, 0, canvas.width, canvas.height);
           var dataurl = canvas.toDataURL();
           socket.emit('frame', dataurl);
