@@ -49,16 +49,34 @@ var startChannel = function(channel) {
         user2.emit('frame', frame);
       }
     });
+    socket.on('ready', function () {
+      if (user2) {
+        user2.emit('ready');
+      }
+    });
     console.log("A LEG CONNECTED");
+    if (user1 && user2) {
+      user1.emit('ready');
+      user2.emit('ready');
+    }
   });
   b.on('connection', function (socket) {
     user2 = socket
+    socket.on('frame', function (frame) {
+      if (user1) {
+        user1.emit('frame', frame);
+      }
+    });
     socket.on('ready', function () {
       if (user1) {
         user1.emit('ready');
       }
     });
     console.log("B LEG CONNECTED");
+    if (user1 && user2) {
+      user1.emit('ready');
+      user2.emit('ready');
+    }
   });
 }
 

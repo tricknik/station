@@ -63,7 +63,6 @@ var runMonitor = function(channel) {
     socket.on('frame', function (dataURL) {
       imageObj.src = dataURL;
     });
-    socket.emit('ready');
   });
 }
 
