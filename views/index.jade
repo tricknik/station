@@ -1,20 +1,21 @@
-h1= title
+h1= "Miscommunication Station"
 div.main
   table(cellpadding=0, cellspacing=0)
     tbody
       tr
         td
-          img(src="images/left.gif")
+          img(src="/images/left.gif")
         td
-          img(src="images/top.gif")
+          img(src="/images/top.gif")
           br
-          img(src="images/dima.png",width="320",height="240")
-          video(id="camera", width="80", height="64", autoplay="", style="margin:-56px 0 0 -83px; border: 2px solid orange;")
+          canvas(id="display", width="320", height="240")
+          video(id="camera", width="80", height="64", autoplay="", style="margin:-54px 0 0 -83px; border: 2px solid orange;")
 
           br
-          img(src="images/bottom.gif")
+          img(src="/images/bottom.gif")
         td
-          img(src="images/right.gif")
+          img(src="/images/right.gif")
 canvas(id="frame", width="320", height="240", style="display:none;")
 script(type="text/javascript")
-  runCamera();
+  runCamera('#{channel}/#{leg}');
+  runMonitor('#{channel}/#{leg}');

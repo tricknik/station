@@ -1,6 +1,6 @@
 
 var runCamera = function(channel) {
-  var socket = io.connect('/channel/1/a');
+  var socket = io.connect('/channel/' + channel);
   var camera = document.getElementById('camera');
   var canvas = document.getElementById('frame');
   var frame = canvas.getContext('2d');
@@ -49,7 +49,7 @@ var runCamera = function(channel) {
 }
 
 var runMonitor = function(channel) {
-  var socket = io.connect('/channel/1/b');
+  var socket = io.connect('/channel/' + channel);
   socket.on('connect', function() {
     var canvas = document.getElementById('display');
     var display = canvas.getContext('2d');

@@ -29,6 +29,7 @@ app.configure('production', function(){
 // ROUTES
 
 app.get('/', routes.index);
+app.get('/console/:channel/:leg', routes.console);
 app.get('/monitor', routes.monitor);
 
 app.listen(3000, function() {

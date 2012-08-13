@@ -4,7 +4,11 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Miscommunication Station' })
+  res.render('index', { channel: '1', leg: 'a' })
+};
+
+exports.console = function(req, res){
+  res.render('index', { channel: req.params.channel, leg: req.params.leg})
 };
 
 exports.monitor = function(req, res){
