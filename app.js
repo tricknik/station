@@ -29,7 +29,9 @@ app.configure('production', function(){
 // ROUTES
 
 app.get('/', routes.index);
-app.get('/console/:channel/:leg', routes.console);
+app.get('/console/:channel/:leg', function(req, res) {
+  routes.console(req,res);
+});
 app.get('/monitor', routes.monitor);
 
 app.listen(3000, function() {
@@ -38,45 +40,33 @@ app.listen(3000, function() {
 
 // CHANNELS
 var startChannel = function(channel) {
+  io.set('log level', 1);
   a = io.of('/channel/' + channel + '/a');
   b = io.of('/channel/' + channel + '/b');
-  var user1 = false;
-  var user2 = false;
+  var bridge = [false, false];
+  var bindChannel = function(party, counterparty) {
+    bridge[party].on('frame', function (frame) {
+      if (bridge[counterparty]) {
+        bridge[counterparty].emit('frame', frame);
+      }
+    });
+    bridge[party].emit('frame', 'http://placekitten.com/320/240');
+  };
   a.on('connection', function (socket) {
-    user1 = socket;
-    socket.on('frame', function (frame) {
-      if (user2) {
-        user2.emit('frame', frame);
-      }
+    bridge[0] = socket;
+    bindChannel(0, 1);
+    bridge[0].on('disconnect', function (frame) {
+      console.log(channel + "/a disconnected");
     });
-    socket.on('ready', function () {
-      if (user2) {
-        user2.emit('ready');
-      }
-    });
-    console.log("A LEG CONNECTED");
-    if (user1 && user2) {
-      user1.emit('ready');
-      user2.emit('ready');
-    }
+    console.log(channel + "/a connected");
   });
   b.on('connection', function (socket) {
-    user2 = socket
-    socket.on('frame', function (frame) {
-      if (user1) {
-        user1.emit('frame', frame);
-      }
+    bridge[1] = socket;
+    bindChannel(1, 0);
+    bridge[1].on('disconnect', function (frame) {
+      console.log(channel + "/b disconnected");
     });
-    socket.on('ready', function () {
-      if (user1) {
-        user1.emit('ready');
-      }
-    });
-    console.log("B LEG CONNECTED");
-    if (user1 && user2) {
-      user1.emit('ready');
-      user2.emit('ready');
-    }
+    console.log(channel + "/b connected");
   });
 }
 
