@@ -25,10 +25,13 @@ var runCamera = function(channel) {
         } else if (roll < 0.075) {
           canvas.width = 100;
           canvas.height = 80;
-        } else if (roll < 0.01) {
+        } else if (roll < 0.1) {
           canvas.width = 200;
           canvas.height = 160;
-        } else if (roll < 0.3) {
+        } else if (roll < 0.15) {
+          canvas.width = 320;
+          canvas.height = 240;
+        } else if (roll < 0.35) {
           canvas.width = newsize(canvas.width, 5, 200);
           canvas.height = newsize(canvas.height, 4, 160);
         }
@@ -36,7 +39,7 @@ var runCamera = function(channel) {
         var dataurl = canvas.toDataURL();
         setTimeout(function() {
           socket.emit('frame', dataurl);
-        }, 75);
+        }, 300);
       });
     });
   }, function(err) {
@@ -55,7 +58,7 @@ var runMonitor = function(channel) {
       display.drawImage(this, 0, 0, canvas.width, canvas.height);
       setTimeout(function() {
         socket.emit('ready');
-      }, 75);
+      }, 200);
     };
     socket.on('frame', function (dataURL) {
       imageObj.src = dataURL;
