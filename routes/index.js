@@ -8,7 +8,7 @@ exports.index = function(req, res){
 };
 
 exports.console = function(req, res){
-  res.render('index', { channel: req.params.channel, leg: req.params.leg})
+  res.render('index', { bridge: req.params.bridge, leg: req.params.leg})
 };
 
 exports.monitor = function(req, res){

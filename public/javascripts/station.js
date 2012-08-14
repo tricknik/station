@@ -1,12 +1,27 @@
 
 var runStation = function(channel) {
   var socket = io.connect('/channel/' + channel);
+  var peer = false;
   socket.on('connect', function() {
-    var socket = io.connect('/channel/' + channel);
+    var emitEvent = function(event, data) {
+      if (!peer) {
+        socket.emit(event, data);
+      }
+    }
+    emitEvent('ready');
     var frame = document.getElementById('frame');
     var buffer = frame.getContext('2d');
     var camera = document.getElementById('camera');
-    navigator.getUserMedia("video", function(stream) {
+    var getCamera = function(callback, errback) {
+      if (navigator.getUserMedia) {
+        navigator.getUserMedia("video", callback); 
+      } else if (navigator.webkitGetUserMedia) {
+        navigator.webkitGetUserMedia({video: true, audio: false}, function(stream) {
+	  callback(webkitURL.createObjectURL(stream));
+        });
+      }
+    };
+    getCamera(function(stream) {
       camera.src = stream; 
     });
     var monitor = document.getElementById('monitor');
@@ -17,7 +32,10 @@ var runStation = function(channel) {
     };
     socket.on('frame', function (url) {
       input.src = url;
+    });
 
+    socket.on('ready', function () {
+      emitEvent('ready');
       var newsize = function(size, min, max) {
         var size = (size * Math.random()) + (size * Math.random()); 
         if (size < min) size = max * 0.9;
@@ -47,8 +65,7 @@ var runStation = function(channel) {
       }
       buffer.drawImage(camera, 0, 0, frame.width, frame.height);
       var dataurl = frame.toDataURL();
-      socket.emit('frame', dataurl);
-      socket.emit('ack', channel);
+      emitEvent('frame', dataurl);
     });
   });
 };

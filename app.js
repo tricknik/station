@@ -29,8 +29,22 @@ app.configure('production', function(){
 // ROUTES
 
 app.get('/', routes.index);
-app.get('/console/:channel/:leg', function(req, res) {
-  routes.console(req,res);
+app.get('/console/:bridge/:leg', function(req, res) {
+  var sockets = { a:0, b:1 };
+  if (req.params.bridge in bridges) {
+    if (bridges[req.params.bridge] == sockets[req.params.leg]) {
+      console.log(req.params.bridge + ' channel busy');
+      res.send(423);
+    } else if (bridges[req.params.bridge] == 'up') {
+      console.log(req.params.bridge + ' bridge busy');
+      res.send(403);
+    } else {
+      routes.console(req,res);
+    }
+  } else {
+    console.log(req.params.bridge + ' unavailable');
+    res.send(404);
+  }
 });
 app.get('/monitor', routes.monitor);
 
@@ -38,37 +52,64 @@ app.listen(3000, function() {
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
 
-// CHANNELS
-var startChannel = function(channel) {
+// BRIDGES
+var startBridge = function(bridge) {
   io.set('log level', 1);
-  a = io.of('/channel/' + channel + '/a');
-  b = io.of('/channel/' + channel + '/b');
-  var bridge = [false, false];
+  var leg = { 0:'/a', 1:'/b' };
+  a = io.of('/channel/' + bridge + leg[0]);
+  b = io.of('/channel/' + bridge + leg[1]);
+  var sockets = [false, false];
   var bindChannel = function(party, counterparty) {
-    bridge[party].on('frame', function (frame) {
-      if (bridge[counterparty]) {
-        bridge[counterparty].emit('frame', frame);
+    sockets[party].on('message', function (data) {
+      if (sockets[counterparty]) {
+        sockets[counterparty].send(data);
       }
     });
-    bridge[party].emit('frame', 'http://placekitten.com/320/240');
+    sockets[party].on('ready', function () {
+      if (sockets[counterparty]) {
+        sockets[counterparty].emit('ready');
+      }
+    });
+    sockets[party].on('frame', function (frame) {
+      if (sockets[counterparty]) {
+        process.nextTick(function() {
+          sockets[counterparty].emit('frame', frame);
+        });
+       }
+    });
+    if (sockets[counterparty]) {
+       bridges[bridge] = 'up';
+    } else {
+       bridges[bridge] = party;
+    }
+    sockets[party].on('disconnect', function () {
+      sockets[party] = false;
+      if (sockets[counterparty]) {
+        bridges[bridge] = counterparty;
+      } else {
+        bridges[bridge] = 'open';
+      }
+      console.log(bridge + leg[party] + " disconnected");
+      console.log(bridge + " " + bridges[bridge]);
+    });
+    sockets[party].emit('frame', 'http://placekitten.com/320/240');
+    console.log(bridge + leg[party] + " connected");
   };
   a.on('connection', function (socket) {
-    bridge[0] = socket;
+    sockets[0] = socket;
     bindChannel(0, 1);
-    bridge[0].on('disconnect', function (frame) {
-      console.log(channel + "/a disconnected");
-    });
-    console.log(channel + "/a connected");
+    console.log(bridge + " " + bridges[bridge]);
   });
   b.on('connection', function (socket) {
-    bridge[1] = socket;
+    sockets[1] = socket;
     bindChannel(1, 0);
-    bridge[1].on('disconnect', function (frame) {
-      console.log(channel + "/b disconnected");
-    });
-    console.log(channel + "/b connected");
+    console.log(bridge + " " + bridges[bridge]);
   });
-}
+  return 'open';
+};
 
-startChannel('1');
+var bridges = {
+  1: startBridge(1),
+  2: startBridge(2)
+};
 
