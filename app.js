@@ -29,15 +29,29 @@ app.configure('production', function(){
 // ROUTES
 
 app.get('/', routes.index);
+app.get('/bridge/:bridge', function(req, res) {
+  console.log(req.params.bridge + ' entering bridge');
+  var counterparty = { 0:'/b', 1:'/a' };
+  if (req.params.bridge in bridges) {
+    if (bridges[req.params.bridge] == 'up') {
+      console.log(req.params.bridge + ' bridge busy');
+      res.send(403);
+    } else if (bridges[req.params.bridge] == 'open') {
+      res.redirect('/console/' + req.params.bridge + '/a');
+    } else {
+      res.redirect('/console/' + req.params.bridge + counterparty[bridges[req.params.bridge]]);
+    }
+  } else {
+    console.log(req.params.bridge + ' unavailable');
+    res.send(404);
+  }
+});
 app.get('/console/:bridge/:leg', function(req, res) {
   var sockets = { a:0, b:1 };
   if (req.params.bridge in bridges) {
-    if (bridges[req.params.bridge] == sockets[req.params.leg]) {
+    if (bridges[req.params.bridge] == sockets[req.params.leg] || bridges[req.params.bridge] == 'up') {
       console.log(req.params.bridge + ' channel busy');
-      res.send(423);
-    } else if (bridges[req.params.bridge] == 'up') {
-      console.log(req.params.bridge + ' bridge busy');
-      res.send(403);
+      res.redirect('/bridge/' + req.params.bridge);
     } else {
       routes.console(req,res);
     }
@@ -82,16 +96,20 @@ var startBridge = function(bridge) {
     } else {
        bridges[bridge] = party;
     }
-    sockets[party].on('disconnect', function () {
-      sockets[party] = false;
-      if (sockets[counterparty]) {
-        bridges[bridge] = counterparty;
-      } else {
-        bridges[bridge] = 'open';
+    var disconnect = function() {
+      if (sockets[party]) { 
+        sockets[party] = false;
+        if (sockets[counterparty]) {
+          bridges[bridge] = counterparty;
+        } else {
+          bridges[bridge] = 'open';
+        }
+        console.log(bridge + leg[party] + " disconnected");
+        console.log(bridge + " " + bridges[bridge]);
       }
-      console.log(bridge + leg[party] + " disconnected");
-      console.log(bridge + " " + bridges[bridge]);
-    });
+    };
+    sockets[party].on('bye', disconnect);
+    sockets[party].on('disconnect', disconnect);
     sockets[party].emit('frame', 'http://placekitten.com/320/240');
     console.log(bridge + leg[party] + " connected");
   };
