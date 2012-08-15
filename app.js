@@ -79,6 +79,14 @@ var startBridge = function(bridge) {
   b = io.of('/channel/' + bridge + leg[1]);
   var sockets = [false, false];
   var bindChannel = function(party, counterparty) {
+    sockets[party].send("Welcome to bridge " + bridge + ".");
+    if (sockets[counterparty]) {
+      sockets[counterparty].send(sockets[party].handshake.address.address + " connected.");
+      sockets[party].send(sockets[counterparty].handshake.address.address + " is here.");
+    } else {
+      sockets[party].send("Waiting for counterparty, please standby.");
+    }
+    announce(sockets[party].handshake.address.address + " entered bridge " + bridge);
     sockets[party].on('message', function (data) {
       console.log(">> " + data);
       if (sockets[counterparty]) {
@@ -104,12 +112,15 @@ var startBridge = function(bridge) {
     }
     var disconnect = function() {
       if (sockets[party]) { 
-        sockets[party] = false;
+        announce(sockets[party].handshake.address.address + " left bridge " + bridge);
         if (sockets[counterparty]) {
+          sockets[counterparty].emit('frame', 'http://placekitten.com/320/240');
+          sockets[counterparty].send(sockets[party].handshake.address.address + " disconnected.");
           bridges[bridge] = counterparty;
         } else {
           bridges[bridge] = 'open';
         }
+        sockets[party] = false;
         console.log(bridge + leg[party] + " disconnected");
         console.log(bridge + " " + bridges[bridge]);
       }
@@ -141,8 +152,18 @@ var bridges = {
 var busy = {2:true, 8:true};
 
 // CHAT
-chat = io.of('/channel/chat');
+var chat = io.of('/channel/chat');
+var chatSocket = false;
+var announce = function(message) {
+  if (chatSocket) {
+    chatSocket.broadcast.send(message);
+  }
+};
 chat.on('connection', function (socket) {
+  chatSocket = socket;
+  socket.send('Welcome To Miscommunication Station!');
+  socket.send('Select a channel to enter bridge.');
+  socket.broadcast.send(socket.handshake.address.address + " connected.");
   socket.on('message',function(message) {
     socket.broadcast.send(socket.handshake.address.address + ": " + message);
     console.log(message);
