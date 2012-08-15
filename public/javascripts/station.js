@@ -1,5 +1,29 @@
 
+
 var Station = {
+  input: null,
+  talk: null,
+  transcript: null,
+  chat: function() {
+    Station.input = document.getElementById('input');
+    Station.transcript = document.getElementById('transcript');
+    Station.talk = io.connect('/chat');
+    Station.talk.on('message', function(message) {
+      var txt = document.createTextNode("> " + message + "\n");
+      Station.transcript.appendChild(txt); 
+    });
+    input.onkeydown = Station.key;
+  },
+  key: function(e) {
+    if(Station.input.value != "") {
+      if(e.keyCode == 13) {
+        Station.talk.send(Station.input.value);     
+        var txt = document.createTextNode("= " + Station.input.value + "\n");
+        Station.transcript.appendChild(txt); 
+        Station.input.value = "";
+      }
+    }
+  },
   stop: function() {},
   run: function(channel) {
     var socket = io.connect('/channel/' + channel);

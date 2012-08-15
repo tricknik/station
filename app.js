@@ -70,8 +70,10 @@ app.listen(3000, function() {
 });
 
 // BRIDGES
+
+io.set('log level', 1);
+
 var startBridge = function(bridge) {
-  io.set('log level', 1);
   var leg = { 0:'/a', 1:'/b' };
   a = io.of('/channel/' + bridge + leg[0]);
   b = io.of('/channel/' + bridge + leg[1]);
@@ -136,3 +138,13 @@ var bridges = {
   7: startBridge(7),
 };
 var busy = {2:true, 8:true};
+
+// CHAT
+chat = io.of('/chat');
+chat.on('connection', function (socket) {
+  socket.on('message',function(message) {
+    socket.broadcast.send(socket.handshake.address.address + ": " + message);
+    console.log(message);
+  });
+  console.log("chat ready");
+});
