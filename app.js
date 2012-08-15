@@ -32,10 +32,13 @@ app.get('/', routes.index);
 app.get('/bridge/:bridge', function(req, res) {
   console.log(req.params.bridge + ' entering bridge');
   var counterparty = { 0:'/b', 1:'/a' };
+  if (req.params.bridge in busy) {
+     routes.busy(req, res);
+  }
   if (req.params.bridge in bridges) {
     if (bridges[req.params.bridge] == 'up') {
       console.log(req.params.bridge + ' bridge busy');
-      res.send(403);
+      routes.busy(req, res);
     } else if (bridges[req.params.bridge] == 'open') {
       res.redirect('/console/' + req.params.bridge + '/a');
     } else {
@@ -43,7 +46,7 @@ app.get('/bridge/:bridge', function(req, res) {
     }
   } else {
     console.log(req.params.bridge + ' unavailable');
-    res.send(404);
+    routes.broken(req, res);
   }
 });
 app.get('/console/:bridge/:leg', function(req, res) {
@@ -128,6 +131,8 @@ var startBridge = function(bridge) {
 
 var bridges = {
   1: startBridge(1),
-  2: startBridge(2)
+  3: startBridge(3),
+  4: startBridge(4),
+  7: startBridge(7),
 };
-
+var busy = {2:true, 8:true};

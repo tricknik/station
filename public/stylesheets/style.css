@@ -6,3 +6,7 @@ body {
 a {
   color: #00B7FF;
 }
+li{margin:0; border:0; padding:0; list-style:none;
+float:left;
+margin-right:10px;
+}
