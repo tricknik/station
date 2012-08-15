@@ -1,47 +1,46 @@
 !!!
 html
   head
-    title= "Miscommunication Station by Telekommunisten"
+    title= 'Miscommunication Station by Telekommunisten'
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(type='text/javascript', src='/socket.io/socket.io.js')
-    script(type="text/javascript", src="/javascripts/station.js")
-  body(onbeforeunload='Station.stop()', style="padding:0px;")
+    script(type='text/javascript', src='/javascripts/station.js')
+  body(onload='Station.connect("#{channel}")', onbeforeunload='Station.stop()', style='padding:0px;')
     div.main
       table(cellpadding=0, cellspacing=0)
         tbody
           tr
             td
-              img(src="/images/left.gif")
+              img(src='/images/left.gif')
             td
-              img(src="/images/top.gif")
+              img(src='/images/top.gif')
               br
               !{body}
               br
-              img(src="/images/bottom.gif")
+              img(src='/images/bottom.gif')
             td
-              img(src="/images/right.gif")
+              img(src='/images/right.gif')
             td
-              pre#transcript(style="border:7px solid red; width: 320px; height: 360px;")
+              pre#transcript(style='border:7px solid red; width: 320px; height: 360px;')
               br
-              input#input(style="border: 4px solid orange; width: 320px;", autofocus="")
+              input#input(style='border: 4px solid orange; width: 320px;', autofocus='')
     ul
       li
-        a(href="/bridge/1") [ 1 ]
+        a(href='/bridge/1') [ 1 ]
       li
-        a(href="/bridge/2") [ 2 ]
+        a(href='/bridge/2') [ 2 ]
       li
-        a(href="/bridge/3") [ 3 ]
+        a(href='/bridge/3') [ 3 ]
       li
-        a(href="/bridge/4") [ 4 ]
+        a(href='/bridge/4') [ 4 ]
       li
-        a(href="/bridge/5") [ 5 ]
+        a(href='/bridge/5') [ 5 ]
       li
-        a(href="/bridge/6") [ 6 ]
+        a(href='/bridge/6') [ 6 ]
       li
-        a(href="/bridge/7") [ 7 ]
+        a(href='/bridge/7') [ 7 ]
       li
-        a(href="/bridge/8") [ 8 ]
+        a(href='/bridge/8') [ 8 ]
       li
-        a(href="/") ( X )
-script(type="text/javascript")
-  Station.chat();
+        a(href='/') ( X )
+

@@ -80,6 +80,7 @@ var startBridge = function(bridge) {
   var sockets = [false, false];
   var bindChannel = function(party, counterparty) {
     sockets[party].on('message', function (data) {
+      console.log(">> " + data);
       if (sockets[counterparty]) {
         sockets[counterparty].send(data);
       }
@@ -140,7 +141,7 @@ var bridges = {
 var busy = {2:true, 8:true};
 
 // CHAT
-chat = io.of('/chat');
+chat = io.of('/channel/chat');
 chat.on('connection', function (socket) {
   socket.on('message',function(message) {
     socket.broadcast.send(socket.handshake.address.address + ": " + message);

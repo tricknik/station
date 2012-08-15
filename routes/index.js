@@ -4,21 +4,18 @@
  */
 
 exports.index = function(req, res){
-  res.render('index')
+  res.render('index', { channel: '/chat'})
 };
 
 exports.broken = function(req, res){
-  res.render('broken')
+  res.render('broken', { channel: '/chat'})
 };
 
 exports.busy = function(req, res){
-  res.render('busy')
+  res.render('busy', { channel: '/chat'})
 };
 
 exports.console = function(req, res){
-  res.render('console', { bridge: req.params.bridge, leg: req.params.leg})
+  res.render('console', { channel: "/" + req.params.bridge + '/' + req.params.leg})
 };
 
-exports.monitor = function(req, res){
-  res.render('monitor', { title: 'Miscommunication Station' })
-};

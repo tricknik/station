@@ -1,6 +1,4 @@
 span.screen(style="padding:0;")
-  canvas(id="frame", width="320", height="240", style="display:none;")
-  canvas(id="monitor", width="320", height="240")
-  video(id="camera", width="80", height="64", autoplay="", style="margin:-54px 0 0 -83px; border: 2px solid orange;")
-script(type="text/javascript")
-  Station.run('#{bridge}/#{leg}');
+  canvas#frame(width="320", height="240", style="display:none;")
+  canvas#monitor(width="320", height="240")
+  video#camera(width="80", height="64", autoplay="", style="margin:-54px 0 0 -83px; border: 2px solid orange;")
