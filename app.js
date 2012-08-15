@@ -84,7 +84,8 @@ var startBridge = function(bridge) {
       sockets[counterparty].send(sockets[party].handshake.address.address + " connected.");
       sockets[party].send(sockets[counterparty].handshake.address.address + " is here.");
     } else {
-      sockets[party].send("Waiting for counterparty, please standby.");
+      sockets[party].send("Waiting for counterparty to join.");
+      sockets[party].send("Please standby.");
     }
     announce(sockets[party].handshake.address.address + " entered bridge " + bridge);
     sockets[party].on('message', function (data) {
