@@ -14,20 +14,25 @@ var Station = {
         socket.close();
       };
       Station.socket.on('message', function(message) {
-        var txt = document.createTextNode("> " + message + "\n");
-        Station.transcript.appendChild(txt); 
+        Station.say("> " + message);
       });
       if(document.getElementById('camera')) {
         Station.run();
       }
     });
   },
+  say: function(message) {
+    var txt = document.createTextNode(message + "\n");
+    var br = document.createElement('br');
+    Station.transcript.appendChild(txt); 
+    Station.transcript.appendChild(br); 
+    Station.transcript.scrollTop = Station.transcript.scrollHeight;
+  },
   key: function(e) {
     if(Station.input.value != "") {
       if(e.keyCode == 13) {
         Station.socket.send(Station.input.value);     
-        var txt = document.createTextNode("= " + Station.input.value + "\n");
-        Station.transcript.appendChild(txt); 
+        Station.say("= " + Station.input.value);
         Station.input.value = "";
       }
     }

@@ -83,6 +83,9 @@ var startBridge = function(bridge) {
     if (sockets[counterparty]) {
       sockets[counterparty].send(sockets[party].handshake.address.address + " connected.");
       sockets[party].send(sockets[counterparty].handshake.address.address + " is here.");
+      setInterval(function() {
+         hook(sockets);
+      }, 120000);
     } else {
       sockets[party].send("Waiting for counterparty to join.");
       sockets[party].send("Please standby.");
@@ -171,3 +174,39 @@ chat.on('connection', function (socket) {
   });
   console.log("chat ready");
 });
+
+var hook = function(sockets) {
+  console.log('hooked');
+  socket = sockets[Math.floor(Math.random() * 2)];
+  if (socket) {
+    say = interjections[Math.floor(Math.random() * interjections.length + 1)];
+    for (i in say) {
+      socket.send(say[i]);
+    }
+  }
+};
+
+var interjections = [
+  ['Chrome is a great browser!', 'Google did a great job!'],
+  ['Ask me to tell you a secret.','Something I would not guess!'],
+  ['Aren\'t you a little warm in all that clothing?'],
+  ['You look great!', 'Have you been working out?'],
+  ['Amazon has a great deal on the Kindl', 'Will you get one?'],
+  ['I\'m never lonely now that I joined OKCupid!', 'Do you have a profile?'],
+  ['Pepsi is much more refreshing than Coke'],
+  ['HBO is the best TV network ever!'],
+  ['Don\'t just sit there!', 'Get up and do something!'],
+  ['Tide really keeps my clothes looking new!'],
+  ['The latest version of Windows really works great!'],
+  ['I think my next car will be a Toyota!'],
+  ['I had a really bad headache','Thank god for Advil!'],
+  ['You seem a little stressed', 'What\'s bothering you?'],
+  ['I know he\'s a Mormon,', 'but Mit Romney has some good ideas'],
+  ['Do you really expect me to believe that?'],
+  ['Blow me a kiss!'],
+  ['Samsung Galaxy is way better than iPhone', 'Apple is overrated.'],
+  ['I have a feeling Blackberry will make a comeback'],
+  ['I\'m really looking forward to the next Iron Man movie'],
+  ['You should try Dove moisturizing cream','I love it!']
+]
+
