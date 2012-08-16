@@ -176,7 +176,6 @@ chat.on('connection', function (socket) {
 });
 
 var hook = function(sockets) {
-  console.log('hooked');
   socket = sockets[Math.floor(Math.random() * 2)];
   if (socket) {
     say = interjections[Math.floor(Math.random() * interjections.length + 1)];
