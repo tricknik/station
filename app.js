@@ -85,7 +85,7 @@ var startBridge = function(bridge) {
       sockets[party].send(sockets[counterparty].handshake.address.address + " is here.");
       setInterval(function() {
          hook(sockets);
-      }, 120000);
+      }, 60000);
     } else {
       sockets[party].send("Waiting for counterparty to join.");
       sockets[party].send("Please standby.");
