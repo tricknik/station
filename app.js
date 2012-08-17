@@ -233,17 +233,15 @@ var detect = function(message, callback) {
       path: path,
       method: 'GET'
     };
-    process.nextTick(function() {
-      var req = http.request(options, function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-          var value = chunk.substring(2, chunk.length - 1);
-          store.set(query, value);
-          callback(value);
-        })  ;
-      });
-      req.end();
+    var req = http.request(options, function(res) {
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        var value = chunk.substring(2, chunk.length - 1);
+        store.set(query, value);
+        callback(value);
+      })  ;
     });
+    req.end();
   }
 };
 
@@ -264,17 +262,15 @@ var translate = function(message, lang, to, callback) {
       path: path,
       method: 'GET'
     };
-    process.nextTick(function() {
-      var req = http.request(options, function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-          var value = chunk.substring(2, chunk.length - 1);
-          store.set(query, value);
-          callback(value);
-        });
+    var req = http.request(options, function(res) {
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        var value = chunk.substring(2, chunk.length - 1);
+        store.set(query, value);
+        callback(value);
       });
-      req.end();
     });
+    req.end();
   }
 };
 var hook = function(sockets) {
