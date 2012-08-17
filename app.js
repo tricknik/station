@@ -193,7 +193,8 @@ chat.on('connection', function (socket) {
   chatSocket = socket;
   if (!('lang' in socket)) socket.lang = {};
   socket.lang[socket.handshake.stationId] = socket.handshake.headers['accept-language'].substring(0,2);
-  socket.emit('untranslated', 'Welcome To Miscommunication Station!');
+  socket.emit('message', 'Welcome To Miscommunication Station!');
+  socket.emit('message', 'Initializing ...');
   socket.emit('untranslated', 'Select a channel to enter bridge.');
   socket.broadcast.emit('untranslated', socket.handshake.address.address + " connected.");
   socket.on('translate',function(message) {
