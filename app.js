@@ -2,10 +2,13 @@
 // DEPENDENCIES
 
 var express = require('express')
+  , fs = require('fs')
+  , http = require('http')
   , routes = require('./routes');
 
-var app = module.exports = express.createServer()
-  , io = require('socket.io').listen(app);
+var app = module.exports = express.createServer();
+var io = require('socket.io').listen(app);
+var rack = require('hat').rack();
 
 // CONFIGURATION
 
@@ -28,16 +31,17 @@ app.configure('production', function(){
 
 // ROUTES
 
-app.get('/', routes.index);
+app.get('/', function(req, res) {
+  var lang = req.acceptedLanguages;
+  routes.index(req, res);
+});
 app.get('/bridge/:bridge', function(req, res) {
-  console.log(req.params.bridge + ' entering bridge');
   var counterparty = { 0:'/b', 1:'/a' };
   if (req.params.bridge in busy) {
      routes.busy(req, res);
   }
   if (req.params.bridge in bridges) {
     if (bridges[req.params.bridge] == 'up') {
-      console.log(req.params.bridge + ' bridge busy');
       routes.busy(req, res);
     } else if (bridges[req.params.bridge] == 'open') {
       res.redirect('/console/' + req.params.bridge + '/a');
@@ -45,7 +49,6 @@ app.get('/bridge/:bridge', function(req, res) {
       res.redirect('/console/' + req.params.bridge + counterparty[bridges[req.params.bridge]]);
     }
   } else {
-    console.log(req.params.bridge + ' unavailable');
     routes.broken(req, res);
   }
 });
@@ -53,13 +56,11 @@ app.get('/console/:bridge/:leg', function(req, res) {
   var sockets = { a:0, b:1 };
   if (req.params.bridge in bridges) {
     if (bridges[req.params.bridge] == sockets[req.params.leg] || bridges[req.params.bridge] == 'up') {
-      console.log(req.params.bridge + ' channel busy');
       res.redirect('/bridge/' + req.params.bridge);
     } else {
       routes.console(req,res);
     }
   } else {
-    console.log(req.params.bridge + ' unavailable');
     res.send(404);
   }
 });
@@ -71,7 +72,13 @@ app.listen(3000, function() {
 
 // BRIDGES
 
-io.set('log level', 1);
+io.configure(function (){
+  io.set('log level', 1);
+  io.set('authorization', function (handshakeData, callback) {
+    handshakeData.stationId = rack();
+    callback(null, true); 
+  });
+});
 
 var startBridge = function(bridge) {
   var leg = { 0:'/a', 1:'/b' };
@@ -79,22 +86,36 @@ var startBridge = function(bridge) {
   b = io.of('/channel/' + bridge + leg[1]);
   var sockets = [false, false];
   var bindChannel = function(party, counterparty) {
+    var say = function(who, message) {
+      console.log('channel lang ' + sockets[who].lang);
+      translate(message, 'en', sockets[who].lang, function(message) {
+        sockets[who].send(message);
+      });
+    };
+    var hooks = false;
     sockets[party].send("Welcome to bridge " + bridge + ".");
     if (sockets[counterparty]) {
-      sockets[counterparty].send(sockets[party].handshake.address.address + " connected.");
-      sockets[party].send(sockets[counterparty].handshake.address.address + " is here.");
-      setInterval(function() {
+      say(counterparty, sockets[party].handshake.address.address + " connected.");
+      say(party, sockets[counterparty].handshake.address.address + " is here.");
+      hooks = setInterval(function() {
          hook(sockets);
       }, 60000);
     } else {
-      sockets[party].send("Waiting for counterparty to join.");
-      sockets[party].send("Please standby.");
+      say(party, "Waiting for counterparty to join.");
+      say(party, "Please standby.");
     }
     announce(sockets[party].handshake.address.address + " entered bridge " + bridge);
     sockets[party].on('message', function (data) {
-      console.log(">> " + data);
       if (sockets[counterparty]) {
-        sockets[counterparty].send(data);
+        detect(data, function(lang) {
+          if (sockets[party].lang != lang) {
+            sockets[party].lang = lang;
+            sockets[party].emit('lang', lang);
+          }
+          translate(data, sockets[party].lang, sockets[counterparty].lang, function(message) {
+            sockets[counterparty].send(message);
+          });
+        });
       }
     });
     sockets[party].on('ready', function () {
@@ -115,6 +136,7 @@ var startBridge = function(bridge) {
        bridges[bridge] = party;
     }
     var disconnect = function() {
+      if (hooks) clearInterval(hooks);
       if (sockets[party]) { 
         announce(sockets[party].handshake.address.address + " left bridge " + bridge);
         if (sockets[counterparty]) {
@@ -126,7 +148,6 @@ var startBridge = function(bridge) {
         }
         sockets[party] = false;
         console.log(bridge + leg[party] + " disconnected");
-        console.log(bridge + " " + bridges[bridge]);
       }
     };
     sockets[party].on('bye', disconnect);
@@ -135,14 +156,19 @@ var startBridge = function(bridge) {
     console.log(bridge + leg[party] + " connected");
   };
   a.on('connection', function (socket) {
-    sockets[0] = socket;
-    bindChannel(0, 1);
-    console.log(bridge + " " + bridges[bridge]);
+    socket.on('lang', function(lang) {
+      socket.lang = lang;
+      sockets[0] = socket;
+      bindChannel(0, 1);
+    });
   });
   b.on('connection', function (socket) {
-    sockets[1] = socket;
-    bindChannel(1, 0);
-    console.log(bridge + " " + bridges[bridge]);
+    socket.on('lang', function(lang) {
+      socket.lang = lang;
+      sockets[1] = socket;
+      bindChannel(1, 0);
+    });
+    if (!('lang' in socket)) socket.lang = 'en'
   });
   return 'open';
 };
@@ -160,27 +186,101 @@ var chat = io.of('/channel/chat');
 var chatSocket = false;
 var announce = function(message) {
   if (chatSocket) {
-    chatSocket.broadcast.send(message);
+    chatSocket.broadcast.emit('untranslated', (message));
   }
 };
 chat.on('connection', function (socket) {
   chatSocket = socket;
-  socket.send('Welcome To Miscommunication Station!');
-  socket.send('Select a channel to enter bridge.');
-  socket.broadcast.send(socket.handshake.address.address + " connected.");
-  socket.on('message',function(message) {
-    socket.broadcast.send(socket.handshake.address.address + ": " + message);
-    console.log(message);
+  if (!('lang' in socket)) socket.lang = {};
+  socket.lang[socket.handshake.stationId] = "en";
+  socket.emit('untranslated', 'Welcome To Miscommunication Station!');
+  socket.emit('untranslated', 'Select a channel to enter bridge.');
+  socket.broadcast.emit('untranslated', socket.handshake.address.address + " connected.");
+  socket.on('translate',function(message) {
+    detect(message, function(lang) {
+      var to = socket.lang[socket.handshake.stationId];
+      translate(message, lang, to, function(translated) {
+          socket.send(translated);
+      });
+    });
   });
-  console.log("chat ready");
+  socket.on('message',function(message) {
+    detect(message, function(lang) {
+      if (socket.lang[socket.handshake.stationId] != lang) {
+        socket.lang[socket.handshake.stationId] = lang;
+        socket.emit('lang', lang);
+      }
+      socket.broadcast.emit('untranslated', socket.handshake.address.address + ": " + message);
+    });
+  });
+  socket.on('lang', function(lang) {
+    socket.lang[socket.handshake.stationId] = lang;
+  });
+  socket.on('disconnect',function() {
+    delete socket.lang[socket.handshake.stationId];
+  });
 });
+var detect = function(message, callback) {
+  var query = "text=" + encodeURIComponent(message);
+  var path = "/V2/Ajax.svc/Detect?appId=78280AF4DFA1CE1676AFE86340C690023A5AC139&" + query;
+  var value;
+  if (value = store.get(query)) {
+    callback(value);
+  } else { 
+    var options = {
+      host: 'api.microsofttranslator.com',
+      port: 80,
+      path: path,
+      method: 'GET'
+    };
+    var req = http.request(options, function(res) {
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        var value = chunk.substring(2, chunk.length - 1);
+        store.set(query, value);
+        callback(value);
+      })  ;
+    });
+    req.end();
+  }
+};
 
+var translate = function(message, lang, to, callback) {
+  if (lang == to) {
+    callback(message);
+    return;
+  }
+  var query = "from=" + lang + "&to=" + to + "&text=" + encodeURIComponent(message);
+  var path = "/V2/Ajax.svc/Translate?appId=78280AF4DFA1CE1676AFE86340C690023A5AC139&" + query;
+  var value;
+  if (value = store.get(query)) {
+    callback(value);
+  } else { 
+    var options = {
+      host: 'api.microsofttranslator.com',
+      port: 80,
+      path: path,
+      method: 'GET'
+    };
+    var req = http.request(options, function(res) {
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        var value = chunk.substring(2, chunk.length - 1);
+        store.set(query, value);
+        callback(value);
+      });
+    });
+    req.end();
+  }
+};
 var hook = function(sockets) {
   socket = sockets[Math.floor(Math.random() * 2)];
   if (socket) {
     say = interjections[Math.floor(Math.random() * interjections.length + 1)];
     for (i in say) {
-      socket.send(say[i]);
+      translate(say[i], 'en', socket.lang, function(message) {
+        socket.send(message);
+      });
     }
   }
 };
@@ -208,4 +308,22 @@ var interjections = [
   ['I\'m really looking forward to the next Iron Man movie'],
   ['You should try Dove moisturizing cream','I love it!']
 ]
+
+var store = {
+  get: function(key) {
+     var value;
+     path = '/tmp/station_translator_' + key;
+     if (fs.existsSync(path)) {
+       value = fs.readFileSync(path, 'utf8')
+     } else {
+       value = false;
+     }
+     return value;
+  },
+  set: function(key, value) {
+    path = '/tmp/station_translator_' + key;
+    fs.writeFileSync(path, value, 'utf8')
+  }
+}
+
 

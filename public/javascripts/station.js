@@ -9,12 +9,22 @@ var Station = {
     Station.input = document.getElementById('input');
     Station.input.onkeydown = Station.key;
     Station.socket.on('connect', function() {
+      var lang;
+      if (lang = localStorage.getItem('lang')) {
+        Station.socket.emit('lang', lang);
+      }
       Station.stop = function() {
         socket.emit('bye', channel);
         socket.close();
       };
+      Station.socket.on('lang', function(lang) {
+        localStorage.setItem('lang', lang);
+      });
       Station.socket.on('message', function(message) {
         Station.say("> " + message);
+      });
+      Station.socket.on('untranslated', function(message) {
+        Station.socket.emit('translate', message);
       });
       if(document.getElementById('camera')) {
         Station.run();
