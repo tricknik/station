@@ -32,6 +32,9 @@ var Station = {
     });
   },
   say: function(message) {
+    if(document.getElementById('init')) {
+       Station.transcript.innerHTML = "";
+    }
     var txt = document.createTextNode(message + "\n");
     var br = document.createElement('br');
     Station.transcript.appendChild(txt); 
