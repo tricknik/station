@@ -215,7 +215,9 @@ chat.on('connection', function (socket) {
   if (!('lang' in socket)) socket.lang = {};
   socket.lang[socket.handshake.stationId] = socket.handshake.headers['accept-language'].substring(0,2);
   socket.emit('untranslated', 'Welcome To Miscommunication Station!');
-  socket.emit('untranslated', 'Select a channel to enter bridge.');
+  socket.emit('untranslated', 'Another fine platform from Telekommunisten.');
+  socket.emit('untranslated', 'This is am experimental preview release.');
+  socket.emit('untranslated', 'SELECT A CHANNEL TO ENTER BRIDGE >>');
   socket.broadcast.emit('untranslated', socket.handshake.address.address + " connected.");
   socket.on('translate',function(message) {
     detect(message, function(lang) {
