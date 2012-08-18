@@ -1,12 +1,98 @@
 body {
-  padding: 50px;
+  padding: 0px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
-
-a {
-  color: #00B7FF;
+#jerrold a {
+  color: white;
+  font-size: 20px;
+  text-decoration: none;
 }
-li{margin:0; border:0; padding:0; list-style:none;
+.down {
+  border-top:2px solid darkgrey; 
+  border-left:2px solid darkgrey; 
+}
+.up {
+  border-bottom:3px solid grey; 
+  border-right:3px solid grey; 
+}
+#jerrold li{
+list-style:none;
 float:left;
 margin-right:10px;
+font-weight: bolder;
+color: white;
+background: burlywood; 
+} 
+#jerrold{ 
+margin-left: 44px;
+width: 520px; 
+float: left; 
+border: 10px solid firebrick; 
+background: khaki; 
+position: relative; 
 }
+.starcom{ 
+display: block; 
+padding: 12px; 
+overflow: hidden; 
+}
+.corner{ 
+width: 15px; 
+position: absolute; 
+z-index: 9; 
+}
+.tl{ 
+top: -10px; 
+left: -10px; 
+}
+.tr{ 
+top: -10px; 
+right: -10px; 
+}
+.bl{ 
+bottom: -10px; 
+left: -10px; 
+}
+.br{ 
+bottom: -10px; 
+right: -10px; 
+}
+.corner .a{ 
+width: 5px; 
+height: 10px; 
+float: left; 
+display: block; 
+background: white; 
+}
+.corner .b{ 
+width: 5px; 
+height: 5px; 
+float: left; 
+display: block; 
+background: white; 
+}
+.corner .c{ 
+width: 10px; 
+height: 10px; 
+float: left; 
+display: block; 
+background: firebrick; 
+}
+.tr .a, .tr .b, 
+.tr .c, .br .a, 
+.br .b, .br .c{ 
+float: right; 
+}
+.bl .a, 
+.br .a{ 
+border-top: 5px solid firebrick; 
+}
+div#transcript{
+margin: 40px 0 0;
+border:7px solid maroon; width: 350px; height: 360px; overflow: auto;
+}
+input#input{
+border: 8px solid orange; width: 346px;
+font-size: 32px;
+}
+
