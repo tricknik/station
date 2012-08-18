@@ -1,32 +1,43 @@
 body {
-  padding: 0px;
+  top: 0px;
+  margin: 0;
+  padding: 0;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  background: lightskyblue;
+}
+div#main {
+  margin-top: 8px;
+  width: 100%;
+}
+table, tr, td {
+  margin-left: auto;
+  margin-right: auto;
 }
 #jerrold a {
   color: white;
-  font-size: 20px;
+  font-size: 32px;
   text-decoration: none;
 }
 .down {
-  border-top:2px solid darkgrey; 
-  border-left:2px solid darkgrey; 
+  border-top:4px solid darkgrey; 
+  border-left:4px solid darkgrey; 
 }
 .up {
-  border-bottom:3px solid grey; 
-  border-right:3px solid grey; 
+  border-bottom:6px solid grey; 
+  border-right:6px solid grey; 
 }
 #jerrold li{
-list-style:none;
-float:left;
-margin-right:10px;
+list-style: none;
+float: left;
+margin: 0 6px;
 font-weight: bolder;
 color: white;
 background: burlywood; 
 } 
 #jerrold{ 
-margin-left: 44px;
-width: 520px; 
-float: left; 
+margin: 4px auto; 
+width: 800px; 
+xfloat: left; 
 border: 10px solid firebrick; 
 background: khaki; 
 position: relative; 
@@ -62,14 +73,14 @@ width: 5px;
 height: 10px; 
 float: left; 
 display: block; 
-background: white; 
+background: lightskyblue; 
 }
 .corner .b{ 
 width: 5px; 
 height: 5px; 
 float: left; 
 display: block; 
-background: white; 
+background: lightskyblue; 
 }
 .corner .c{ 
 width: 10px; 
@@ -88,10 +99,12 @@ float: right;
 border-top: 5px solid firebrick; 
 }
 div#transcript{
-margin: 40px 0 0;
-border:7px solid maroon; width: 350px; height: 360px; overflow: auto;
+margin: 8px 0 0;
+border:7px solid maroon; width: 350px; height: 332px; overflow: auto;
+background: white;
 }
 input#input{
+background: white;
 border: 8px solid orange; width: 346px;
 font-size: 32px;
 }

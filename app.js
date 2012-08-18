@@ -85,11 +85,15 @@ var startBridge = function(bridge) {
   a = io.of('/channel/' + bridge + leg[0]);
   b = io.of('/channel/' + bridge + leg[1]);
   var sockets = [false, false];
-  var bindChannel = function(party, counterparty) {
+  var bindChannel = function(party, counterparty, callback) {
     var say = function(who, message) {
       console.log('channel lang ' + sockets[who].lang);
       translate(message, 'en', sockets[who].lang, function(message) {
-        sockets[who].send(message);
+        if (callback) {
+          callback(message);
+        } else {
+          sockets[who].send(message);
+        }
       });
     };
     var hooks = false;
@@ -307,11 +311,13 @@ var interjections = [
   ['I had a really bad headache','Thank god for Advil!'],
   ['You seem a little stressed', 'What\'s bothering you?'],
   ['I know he\'s a Mormon,', 'but Mit Romney has some good ideas'],
+  ['I\'m certainly disapointed,', 'but Barack Obama is good for the country'],
   ['Do you really expect me to believe that?'],
   ['Blow me a kiss!'],
   ['Samsung Galaxy is way better than iPhone', 'Apple is overrated.'],
   ['I have a feeling Blackberry will make a comeback'],
   ['I\'m really looking forward to the next Iron Man movie'],
+  ['You hair looks great!', 'Have you been using Head & Shoulders?'],
   ['You should try Dove moisturizing cream','I love it!']
 ]
 
