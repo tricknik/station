@@ -12,6 +12,8 @@ var Station = {
       var lang;
       if (lang = localStorage.getItem('lang')) {
         Station.socket.emit('lang', lang);
+      } else {
+        Station.socket.emit('lang', null);
       }
       Station.stop = function() {
         socket.emit('bye', channel);

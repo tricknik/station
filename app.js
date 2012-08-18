@@ -157,14 +157,18 @@ var startBridge = function(bridge) {
   };
   a.on('connection', function (socket) {
     socket.on('lang', function(lang) {
-      socket.lang = lang;
+      if (lang) {
+        socket.lang = lang;
+      }
       sockets[0] = socket;
       bindChannel(0, 1);
     });
   });
   b.on('connection', function (socket) {
     socket.on('lang', function(lang) {
-      socket.lang = lang;
+      if (lang) {
+        socket.lang = lang;
+      }
       sockets[1] = socket;
       bindChannel(1, 0);
     });
@@ -214,7 +218,9 @@ chat.on('connection', function (socket) {
     });
   });
   socket.on('lang', function(lang) {
-    socket.lang[socket.handshake.stationId] = lang;
+    if (lang) {
+      socket.lang[socket.handshake.stationId] = lang;
+    }
   });
   socket.on('disconnect',function() {
     delete socket.lang[socket.handshake.stationId];
