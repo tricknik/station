@@ -217,6 +217,8 @@ chat.on('connection', function (socket) {
   socket.emit('untranslated', 'Welcome To Miscommunication Station!');
   socket.emit('untranslated', 'Another fine platform from Telekommunisten.');
   socket.emit('untranslated', 'This is an experimental preview release.');
+  socket.emit('untranslated', 'Requires Google Chrome 21 or Opera 12.');
+  socket.emit('untranslated', 'Always type in your native language.');
   socket.emit('untranslated', 'SELECT A CHANNEL TO ENTER BRIDGE >>');
   socket.broadcast.emit('untranslated', socket.handshake.address.address + " connected.");
   socket.on('translate',function(message) {
