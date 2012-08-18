@@ -36,7 +36,7 @@ background: burlywood;
 } 
 #jerrold{ 
 margin: 4px auto; 
-width: 800px; 
+width: 754px; 
 xfloat: left; 
 border: 10px solid firebrick; 
 background: khaki; 
@@ -101,11 +101,14 @@ border-top: 5px solid firebrick;
 div#transcript{
 margin: 8px 0 0;
 border:7px solid maroon; width: 350px; height: 332px; overflow: auto;
-background: white;
+background: dimgray;
+font-weight: bold;
+color: gold;
 }
 input#input{
 background: white;
 border: 8px solid orange; width: 346px;
 font-size: 32px;
+font-weight: Bold;
 }
 

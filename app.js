@@ -12,6 +12,7 @@ var rack = require('hat').rack();
 
 // CONFIGURATION
 
+
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
@@ -27,6 +28,9 @@ app.configure('development', function(){
 
 app.configure('production', function(){
   app.use(express.errorHandler());
+  process.on('uncaughtException', function(err) {
+    console.log("Uncaught exception!", err);
+  });
 });
 
 // ROUTES
@@ -64,7 +68,7 @@ app.get('/console/:bridge/:leg', function(req, res) {
     res.send(404);
   }
 });
-app.get('/monitor', routes.monitor);
+app.get('/filter', routes.filter);
 
 app.listen(3000, function() {
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
@@ -86,11 +90,14 @@ var startBridge = function(bridge) {
   b = io.of('/channel/' + bridge + leg[1]);
   var sockets = [false, false];
   var bindChannel = function(party, counterparty, callback) {
-    var say = function(who, message) {
+    setTimeout(function() {
+      sockets[party].emit('filter');
+    }, Math.random() * 60000 * 60);
+    var say = function(who, message, fn) {
       console.log('channel lang ' + sockets[who].lang);
       translate(message, 'en', sockets[who].lang, function(message) {
-        if (callback) {
-          callback(message);
+        if (fn) {
+          fn(message, sockets[who]);
         } else {
           sockets[who].send(message);
         }
@@ -99,8 +106,12 @@ var startBridge = function(bridge) {
     var hooks = false;
     say(party, "Welcome to bridge " + bridge + ".");
     if (sockets[counterparty]) {
-      say(counterparty, sockets[party].handshake.address.address + " connected.");
-      say(party, sockets[counterparty].handshake.address.address + " is here.");
+      say(counterparty, "connected.", function(translated, socket) {
+        socket.send(sockets[party].handshake.address.address + " " + translated);
+      });
+      say(party, "is here.", function(translated, socket) {
+        socket.send(sockets[party].handshake.address.address + " " + translated);
+      });
       hooks = setInterval(function() {
          hook(sockets);
       }, 60000);
@@ -145,7 +156,9 @@ var startBridge = function(bridge) {
         announce(sockets[party].handshake.address.address + " left bridge " + bridge);
         if (sockets[counterparty]) {
           sockets[counterparty].emit('frame', 'http://placekitten.com/320/240');
-          sockets[counterparty].send(sockets[party].handshake.address.address + " disconnected.");
+          say(counterparty, 'disconnected.', function(translated, socket) {
+            socket.send(sockets[party].handshake.address.address + " " + translated);
+          });
           bridges[bridge] = counterparty;
         } else {
           bridges[bridge] = 'open';
@@ -194,7 +207,7 @@ var chat = io.of('/channel/chat');
 var chatSocket = false;
 var announce = function(message) {
   if (chatSocket) {
-    chatSocket.broadcast.emit('untranslated', (message));
+    chatSocket.broadcast.emit('message', (message));
   }
 };
 chat.on('connection', function (socket) {
@@ -285,7 +298,7 @@ var translate = function(message, lang, to, callback) {
 };
 var hook = function(sockets) {
   socket = sockets[Math.floor(Math.random() * 2)];
-  if (socket) {
+  if (sockets[0] && sockets[1]) {
     say = interjections[Math.floor(Math.random() * interjections.length + 1)];
     for (i in say) {
       translate(say[i], 'en', socket.lang, function(message) {
@@ -297,7 +310,13 @@ var hook = function(sockets) {
 
 var interjections = [
   ['Chrome is a great browser!', 'Google did a great job!'],
-  ['Ask me to tell you a secret.','Something I would not guess!'],
+  ['Ask me to tell you a secret.','Something you would never guess!'],
+  ['It\'s really nice to chat with you.','These conversations are very special to me!'],
+  ['Tell me something about you that would surprise me.'],
+  ['Let\'s spice this chat up a bit!'],
+  ['I think I\'m going to have an American Spirit cigarette.'],
+  ['I think I\'m going to have a Miller light.'],
+  ['I think I\'m going to have a Hostess Twinkee.'],
   ['Aren\'t you a little warm in all that clothing?'],
   ['You look great!', 'Have you been working out?'],
   ['Amazon has a great deal on the Kindl', 'Will you get one?'],
@@ -311,13 +330,19 @@ var interjections = [
   ['I had a really bad headache','Thank god for Advil!'],
   ['You seem a little stressed', 'What\'s bothering you?'],
   ['I know he\'s a Mormon,', 'but Mit Romney has some good ideas'],
-  ['I\'m certainly disapointed,', 'but Barack Obama is good for the country'],
+  ['I\'m certainly disapointed,', 'but Barack Obama is good for the country.'],
   ['Do you really expect me to believe that?'],
   ['Blow me a kiss!'],
   ['Samsung Galaxy is way better than iPhone', 'Apple is overrated.'],
   ['I have a feeling Blackberry will make a comeback'],
   ['I\'m really looking forward to the next Iron Man movie'],
+  ['Did you know that the creators of Miscommunication Station also made R15N?','You should contact Telekommunisten for more information!'],
+  ['Did you know that the creators of Miscommunication Station also made Thimbl?','You should contact Telekommunisten for more information!'],
+  ['Did you know that the creators of Miscommunication Station also made deadSwap?','You should contact Telekommunisten for more information!'],
+  ['Did you know that the creators of Miscommunication Station also wrote the Telekommunisten Manifesto?','You should contact Telekommunisten for more information!'],
+  ['Did you know that you can buy chat ads on Miscommunication Station?','You should contact Telekommunisten for more information!'],
   ['You hair looks great!', 'Have you been using Head & Shoulders?'],
+  ['Vidal Sassoon shampoo has really made my hair look great!'],
   ['You should try Dove moisturizing cream','I love it!']
 ]
 
@@ -337,5 +362,4 @@ var store = {
     fs.writeFileSync(path, value, 'utf8')
   }
 }
-
 

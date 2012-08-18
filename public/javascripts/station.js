@@ -28,15 +28,15 @@ var Station = {
       Station.socket.on('untranslated', function(message) {
         Station.socket.emit('translate', message);
       });
+      Station.socket.on('filter', function(lang) {
+        document.location = '/filter';
+      });
       if(document.getElementById('camera')) {
         Station.run();
       }
     });
   },
   say: function(message) {
-    if(document.getElementById('init')) {
-       Station.transcript.innerHTML = "";
-    }
     var txt = document.createTextNode(message + "\n");
     var br = document.createElement('br');
     Station.transcript.appendChild(txt); 
@@ -76,7 +76,8 @@ var Station = {
     var input = new Image();
     input.onload = function() {
       display.drawImage(this, 0, 0, monitor.width, monitor.height);
-     };
+    };
+    input.src = '/images/init.gif';
     socket.on('frame', function (url) {
       input.src = url;
     });
