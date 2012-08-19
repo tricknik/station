@@ -9,6 +9,10 @@ exports.index = function(req, res){
   res.render('index', { channel: '/chat'})
 };
 
+exports.broadcast = function(req, res){
+  res.render('broadcast', { channel: '/chat'})
+};
+
 exports.filter = function(req, res){
   var filter = Math.floor(Math.random() * filters.length);
   res.render('filter', { channel: '/chat', filter: filters[filter]})

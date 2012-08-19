@@ -31,8 +31,13 @@ var Station = {
       Station.socket.on('filter', function(lang) {
         document.location = '/filter';
       });
-      if(document.getElementById('camera')) {
-        Station.run();
+      if (document.getElementById('camera')) {
+        Station.monitor();
+        Station.camera();
+      } else if (document.getElementById('broadcast')) {
+        Station.broadcast();
+      } else if (document.getElementById('monitor')) {
+        Station.monitor();
       }
     });
   },
@@ -53,24 +58,16 @@ var Station = {
     }
   },
   stop: function() {},
-  run: function(channel) {
-    socket = Station.socket;
-    socket.emit('ready');
-    var frame = document.getElementById('frame');
-    var buffer = frame.getContext('2d');
-    var camera = document.getElementById('camera');
-    var getCamera = function(callback, errback) {
-      if (navigator.getUserMedia) {
-        navigator.getUserMedia("video", callback); 
-      } else if (navigator.webkitGetUserMedia) {
-        navigator.webkitGetUserMedia({video: true, audio: false}, function(stream) {
-        callback(webkitURL.createObjectURL(stream));
-        });
-      }
-    };
-    getCamera(function(stream) {
-      camera.src = stream; 
-    });
+  getCamera:  function(callback) {
+    if (navigator.getUserMedia) {
+      navigator.getUserMedia("video", callback); 
+    } else if (navigator.webkitGetUserMedia) {
+      navigator.webkitGetUserMedia({video: true, audio: false}, function(stream) {
+      callback(webkitURL.createObjectURL(stream));
+      });
+    }
+  },
+  monitor: function(channel) {
     var monitor = document.getElementById('monitor');
     var display = monitor.getContext('2d');
     var input = new Image();
@@ -78,42 +75,77 @@ var Station = {
       display.drawImage(this, 0, 0, monitor.width, monitor.height);
     };
     input.src = '/images/init.gif';
-    socket.on('frame', function (url) {
+    var splash = true;
+    Station.socket.on('frame', function (url) {
       input.src = url;
+      if (splash) {
+        if (splash = document.getElementById('splash')) {
+          splash.style.display = "none";
+	  monitor.style.display = "inline";
+          splash = false;
+        }
+      }
     });
-
-    socket.on('ready', function () {
-      socket.emit('ready');
-      var newsize = function(size, min, max) {
-        var size = (size * Math.random()) + (size * Math.random()); 
-        if (size < min) size = max * 0.9;
-        if (size > max) size = min * 1.1;
-        return size;
-      }
-
-      var roll = Math.random();
-      if (roll < 0.025) {
-        frame.width = 25;
-        frame.height = 20;
-      } else if (roll < 0.05) {
-        frame.width = 50;
-        frame.height = 40;
-      } else if (roll < 0.075) {
-        frame.width = 100;
-        frame.height = 80;
-      } else if (roll < 0.1) {
-        frame.width = 200;
-        frame.height = 160;
-      } else if (roll < 0.15) {
-        frame.width = 320;
-        frame.height = 240;
-      } else if (roll < 0.35) {
-        frame.width = newsize(frame.width, 5, 200);
-        frame.height = newsize(frame.height, 4, 160);
-      }
+  },
+  camera: function(channel) {
+    Station.socket.emit('ready');
+    var frame = document.getElementById('frame');
+    var buffer = frame.getContext('2d');
+    var camera = document.getElementById('camera');
+    Station.socket.on('ready', function () {
+      Station.socket.emit('ready');
+      Station.flux(frame);
       buffer.drawImage(camera, 0, 0, frame.width, frame.height);
       var dataurl = frame.toDataURL();
-      socket.emit('frame', dataurl);
+      Station.socket.emit('frame', dataurl);
     });
+    Station.getCamera(function(stream) {
+      camera.src = stream; 
+    });
+  },
+  broadcast: function() {
+    var frame = document.getElementById('frame');
+    var buffer = frame.getContext('2d');
+    var camera = document.getElementById('broadcast');
+    var send = function() {
+      buffer.drawImage(camera, 0, 0, frame.width, frame.height);
+      Station.socket.emit('push', frame.toDataURL());
+    };
+    Station.socket.on('ready', function (url) {
+      send();
+      Station.flux(frame);
+    });
+    Station.getCamera(function(stream) {
+      camera.src = stream; 
+      send();
+    });
+  },
+  flux: function(frame) {
+    var newsize = function(size, min, max) {
+      var size = (size * Math.random()) + (size * Math.random()); 
+      if (size < min) size = max * 0.9;
+      if (size > max) size = min * 1.1;
+      return size;
+    }
+    var roll = Math.random();
+    if (roll < 0.025) {
+      frame.width = 25;
+      frame.height = 20;
+    } else if (roll < 0.05) {
+      frame.width = 50;
+      frame.height = 40;
+    } else if (roll < 0.075) {
+      frame.width = 100;
+      frame.height = 80;
+    } else if (roll < 0.1) {
+      frame.width = 200;
+      frame.height = 160;
+    } else if (roll < 0.15) {
+      frame.width = 320;
+      frame.height = 240;
+    } else if (roll < 0.35) {
+      frame.width = newsize(frame.width, 5, 200);
+      frame.height = newsize(frame.height, 4, 160);
+    }
   }
 };

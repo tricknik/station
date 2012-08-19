@@ -69,6 +69,7 @@ app.get('/console/:bridge/:leg', function(req, res) {
   }
 });
 app.get('/filter', routes.filter);
+app.get('/__broadcast__', routes.broadcast);
 
 app.listen(3000, function() {
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
@@ -123,13 +124,15 @@ var startBridge = function(bridge) {
     sockets[party].on('message', function (data) {
       if (sockets[counterparty]) {
         detect(data, function(lang) {
-          if (sockets[party].lang != lang) {
-            sockets[party].lang = lang;
-            sockets[party].emit('lang', lang);
-          }
-          translate(data, sockets[party].lang, sockets[counterparty].lang, function(message) {
+          if (sockets[party]) {
+            if (sockets[party].lang != lang) {
+              sockets[party].lang = lang;
+              sockets[party].emit('lang', lang);
+            }
+            translate(data, sockets[party].lang, sockets[counterparty].lang, function(message) {
             sockets[counterparty].send(message);
-          });
+            });
+          }
         });
       }
     });
@@ -153,11 +156,12 @@ var startBridge = function(bridge) {
     var disconnect = function() {
       if (hooks) clearInterval(hooks);
       if (sockets[party]) { 
+        addr = sockets[party].handshake.address.address;
         announce(sockets[party].handshake.address.address + " left bridge " + bridge);
         if (sockets[counterparty]) {
           sockets[counterparty].emit('frame', 'http://placekitten.com/320/240');
           say(counterparty, 'disconnected.', function(translated, socket) {
-            socket.send(sockets[party].handshake.address.address + " " + translated);
+            socket.send(addr + " " + translated);
           });
           bridges[bridge] = counterparty;
         } else {
@@ -244,6 +248,14 @@ chat.on('connection', function (socket) {
     if (lang) {
       socket.lang[socket.handshake.stationId] = lang;
     }
+  });
+  socket.on('push',function(frame) {
+    process.nextTick(function() {
+      socket.broadcast.volatile.emit('frame', frame);
+      setTimeout(function() {
+        socket.emit('ready');
+      }, 500);
+    });
   });
   socket.on('disconnect',function() {
     delete socket.lang[socket.handshake.stationId];
