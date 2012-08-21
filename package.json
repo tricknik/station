@@ -1,11 +1,41 @@
 {
-    "name": "application-name"
-  , "version": "0.0.1"
-  , "private": true
-  , "dependencies": {
-      "express": "2.5.11"
-    , "jade": ">= 0.0.1"
-    , "socket.io": ">= 0.9"
-    , "hat": ">= 0.0.3"
+  "name": "miscommunication-station",
+  "version": "0.2.0-1",
+  "author": {
+    "name": "Telekommunisten",
+    "email": "info@telekommunisten.net"
+  },
+  "description": "Miscommunication Station",
+  "subdomain": "station",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tricknik/station.git"
+  },
+  "homepage": "http://telekommunisten.net/miscommunication-station",
+  "scripts": {
+    "start": "node ./app.js"
+  },
+  "contributors": [
+    {
+      "name": "Dmytri Kleiner",
+      "email": "dk@telekommunisten.net"
+    },
+    {
+      "name": "Baruch Gottlieb",
+      "email": "baruch@telekommunisten.net"
+    },
+    {
+      "name": "Jonas Frankki",
+      "email": "jonas@telekommunisten.net"
+    }
+  ],
+  "dependencies": {
+    "express": "2.5.11",
+    "jade": ">= 0.0.1",
+    "socket.io": ">= 0.9",
+    "hat": ">= 0.0.3"
+  },
+  "engines": {
+    "node": ">=0.8"
   }
 }
