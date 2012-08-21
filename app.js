@@ -224,6 +224,9 @@ chat.on('connection', function (socket) {
   socket.emit('untranslated', 'Requires Google Chrome 21 or Opera 12.');
   socket.emit('untranslated', 'Always type in your native language.');
   socket.emit('untranslated', 'Translation for your counterparty is automatic.');
+  socket.emit('untranslated', 'Translation by Microsoft Translator.');
+  socket.emit('untranslated', 'Hosting by Nodejitsu.');
+  socket.emit('untranslated', 'Co-commissioned by Arnolfini and Abandon Normal Devices.');
   socket.emit('untranslated', ' ~~');
   socket.emit('untranslated', 'SELECT A CHANNEL TO ENTER BRIDGE >>');
   socket.broadcast.emit('untranslated', socket.handshake.address.address + " connected.");
