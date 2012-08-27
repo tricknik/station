@@ -3,112 +3,69 @@ body {
   margin: 0;
   padding: 0;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background: lightskyblue;
+  background: black;
 }
+
+div#logo {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
 div#main {
-  margin-top: 8px;
+  width: 100%;  
+  height: 600px;
+  padding-top: 40px;
+  background-image: url('/images/Bg-1280x720-18colors.png');
+  background-repeat: repeat;
+}
+
+div#footer {
+  border 6px solid green;
   width: 100%;
+  height: 200px;
+  background-image: url('/images/footer-top-bg.png');
+  background-repeat: repeat-x;
 }
-table, tr, td {
-  margin-left: auto;
-  margin-right: auto;
+
+div#jerrold {
+  position: relative;
+  margin: 0 auto;
+  width: 906px;
+  heigt: 503px;
+  overflow: hidden;
 }
-#jerrold a {
-  color: white;
-  font-size: 32px;
-  text-decoration: none;
+
+video#camera {
+  position: absolute;
+  top: 212px;
+  left: 270px;
+  border: 3px solid orange;
 }
-.down {
-  border-top:4px solid darkgrey; 
-  border-left:4px solid darkgrey; 
+
+.screen {
+  position: absolute;
+  top: 42px;
+  left: 36px;
 }
-.up {
-  border-bottom:6px solid grey; 
-  border-right:6px solid grey; 
-}
-#jerrold li{
-list-style: none;
-float: left;
-margin: 0 6px;
-font-weight: bolder;
-color: white;
-background: burlywood; 
-} 
-#jerrold{ 
-margin: 4px auto; 
-width: 754px; 
-xfloat: left; 
-border: 10px solid firebrick; 
-background: khaki; 
-position: relative; 
-}
-.starcom{ 
-display: block; 
-padding: 12px; 
-overflow: hidden; 
-}
-.corner{ 
-width: 15px; 
-position: absolute; 
-z-index: 9; 
-}
-.tl{ 
-top: -10px; 
-left: -10px; 
-}
-.tr{ 
-top: -10px; 
-right: -10px; 
-}
-.bl{ 
-bottom: -10px; 
-left: -10px; 
-}
-.br{ 
-bottom: -10px; 
-right: -10px; 
-}
-.corner .a{ 
-width: 5px; 
-height: 10px; 
-float: left; 
-display: block; 
-background: lightskyblue; 
-}
-.corner .b{ 
-width: 5px; 
-height: 5px; 
-float: left; 
-display: block; 
-background: lightskyblue; 
-}
-.corner .c{ 
-width: 10px; 
-height: 10px; 
-float: left; 
-display: block; 
-background: firebrick; 
-}
-.tr .a, .tr .b, 
-.tr .c, .br .a, 
-.br .b, .br .c{ 
-float: right; 
-}
-.bl .a, 
-.br .a{ 
-border-top: 5px solid firebrick; 
-}
+
 div#transcript{
-margin: 8px 0 0;
-border:7px solid maroon; width: 350px; height: 332px; overflow: auto;
-background: dimgray;
+  position: absolute;
+  top: 30px;
+  left: 508px;
+width: 337px; height: 247px; overflow: auto;
+background: transparent;
 font-weight: bold;
-color: gold;
+color: dimgrey;
 }
+
 input#input{
-background: white;
-border: 8px solid orange; width: 346px;
-font-size: 32px;
+  position: absolute;
+  top: 363px;
+  left: 560px;
+background: red;
+width: 250px;
+font-size: 27px;
 font-weight: Bold;
 }
 

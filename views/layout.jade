@@ -6,58 +6,22 @@ html
     script(type='text/javascript', src='/socket.io/socket.io.js')
     script(type='text/javascript', src='/javascripts/station.js')
   body(onload='Station.connect("#{channel}")', onbeforeunload='Station.stop()')
+    div#logo
+      img(src="/images/logocorner.png")
     div#main
-      table(cellpadding=0, cellspacing=0)
-        tbody
-          tr
-            td
-              img(src='/images/left.gif')
-            td(style="background:white")
-              img(src='/images/top.gif')
-              br
-              !{body}
-              br
-              img(src='/images/bottom.gif')
-            td
-              img(src='/images/right.gif')
-            td
-              div#transcript
-              br
-              input#input(autofocus='')
-    div#jerrold
-      div.corner.tl
-        div.a
-        div.b
-        div.c
-      div.corner.tr
-        div.a
-        div.b
-        div.c
-      ul.starcom
-        li.down
-          a.up(href='/bridge/1') [ 1 ]
-        li.down
-          a.up(href='/bridge/2') [ 2 ]
-        li.down
-          a.up(href='/bridge/3') [ 3 ]
-        li.down
-          a.up(href='/bridge/4') [ 4 ]
-        li.down
-          a.up(href='/bridge/5') [ 5 ]
-        li.down
-          a.up(href='/bridge/6') [ 6 ]
-        li.down
-          a.up(href='/bridge/7') [ 7 ]
-        li.down
-          a.up(href='/bridge/8') [ 8 ]
-        li.down
-          a.up(href='/') ( X )
-      div.corner.bl
-        div.a
-        div.c
-        div.b
-      div.corner.br
-        div.a
-        div.c
-        div.b
-
+      div#jerrold
+        img(src="/images/station.png", usemap="starcom");
+        !{body}
+        div#transcript
+        input#input(autofocus='')
+    div#footer
+  map#starcom(name="starcom")
+    | <area shape="rect" coords="66,341,116,391" href="/bridge/1" alt="Bridge 1" title="Bridge 1" />
+    | <area shape="rect" coords="123,336,173,386" href="/bridge/2" alt="Bridge 2" title="Bridge 2"    />
+    | <area shape="rect" coords="176,337,226,387" href="/bridge/3" alt="Bridge 3" title="Bridge 3"    />
+    | <area shape="rect" coords="231,336,281,386" href="/bridge/4" alt="Bridge 4" title="Bridge 4"    />
+    | <area shape="rect" coords="281,338,331,388" href="/bridge/5" alt="Bridge 5" title="Bridge 5"    />
+    | <area shape="rect" coords="68,393,118,443" href="/bridge/6" alt="Bridge 6" title="Bridge 6"    />
+    | <area shape="rect" coords="122,389,172,439" href="/bridge/7" alt="Bridge 7" title="Bridge 7"    />
+    | <area shape="rect" coords="178,390,228,440" href="/bridge/8" alt="Bridge 8" title="Bridge 8"    />
+    | <area shape="rect" coords="232,392,334,442" href="/" alt="home" title="home" />
