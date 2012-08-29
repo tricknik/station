@@ -91,6 +91,7 @@ var startBridge = function(bridge) {
   b = io.of('/channel/' + bridge + leg[1]);
   var sockets = [false, false];
   var bindChannel = function(party, counterparty, callback) {
+    if (!('lang' in sockets[party])) sockets[party].lang = sockets[party].handshake.headers['accept-language'].substring(0,2);
     setTimeout(function() {
       sockets[party].emit('filter');
     }, Math.random() * 60000 * 60);
