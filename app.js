@@ -92,6 +92,7 @@ var startBridge = function(bridge) {
   var sockets = [false, false];
   var bindChannel = function(party, counterparty, callback) {
     if (!('lang' in sockets[party])) sockets[party].lang = sockets[party].handshake.headers['accept-language'].substring(0,2);
+    if (sockets[party].lang == undefined) sockets[party].lang = 'en';
     setTimeout(function() {
       sockets[party].emit('filter');
     }, Math.random() * 60000 * 60);
@@ -361,9 +362,9 @@ var interjections = [
   ['Did you know that the creators of Miscommunication Station also made R15N?','You should contact Telekommunisten for more information!'],
   ['Did you know that the creators of Miscommunication Station also made Thimbl?','You should contact Telekommunisten for more information!'],
   ['Did you know that the creators of Miscommunication Station also made deadSwap?','You should contact Telekommunisten for more information!'],
-  ['Did you know that the creators of Miscommunication Station also wrote the Telekommunisten Manifesto?','You should contact Telekommunisten for more information!'],
+  ['Did you know that the creators of Miscommunication Station also wrote the Telekommunist Manifesto?','You should contact Telekommunisten for more information!'],
   ['Did you know that you can buy chat ads on Miscommunication Station?','You should contact Telekommunisten for more information!'],
-  ['You hair looks great!', 'Have you been using Head & Shoulders?'],
+  ['Your hair looks great!', 'Have you been using Head & Shoulders?'],
   ['Vidal Sassoon shampoo has really made my hair look great!'],
   ['You should try Dove moisturizing cream','I love it!']
 ]
