@@ -87,12 +87,12 @@ io.configure(function (){
 
 var startBridge = function(bridge) {
   var leg = { 0:'/a', 1:'/b' };
-  a = io.of('/channel/' + bridge + leg[0]);
-  b = io.of('/channel/' + bridge + leg[1]);
+  var a = io.of('/channel/' + bridge + leg[0]);
+  var b = io.of('/channel/' + bridge + leg[1]);
   var sockets = [false, false];
   var bindChannel = function(party, counterparty, callback) {
     if (!('lang' in sockets[party])) sockets[party].lang = sockets[party].handshake.headers['accept-language'].substring(0,2);
-    if (sockets[party].lang == undefined) sockets[party].lang = 'en';
+    if (typeof [party].lang === 'undefined') sockets[party].lang = 'en';
     setTimeout(function() {
       sockets[party].emit('filter');
     }, Math.random() * 60000 * 60);
@@ -158,7 +158,7 @@ var startBridge = function(bridge) {
     var disconnect = function() {
       if (hooks) clearInterval(hooks);
       if (sockets[party]) { 
-        addr = sockets[party].handshake.address.address;
+        var addr = sockets[party].handshake.address.address;
         announce(sockets[party].handshake.address.address + " left bridge " + bridge);
         if (sockets[counterparty]) {
           sockets[counterparty].emit('frame', 'http://placekitten.com/320/240');
@@ -269,8 +269,8 @@ chat.on('connection', function (socket) {
 var detect = function(message, callback) {
   var query = "text=" + encodeURIComponent(message);
   var path = "/V2/Ajax.svc/Detect?appId=78280AF4DFA1CE1676AFE86340C690023A5AC139&" + query;
-  var value;
-  if (value = store.get(query)) {
+  var value = store.get(query);
+  if (value) {
     callback(value);
   } else { 
     var options = {
@@ -298,8 +298,8 @@ var translate = function(message, lang, to, callback) {
   }
   var query = "from=" + lang + "&to=" + to + "&text=" + encodeURIComponent(message);
   var path = "/V2/Ajax.svc/Translate?appId=78280AF4DFA1CE1676AFE86340C690023A5AC139&" + query;
-  var value;
-  if (value = store.get(query)) {
+  var value = store.get(query);
+  if (value) {
     callback(value);
   } else { 
     var options = {
@@ -320,13 +320,14 @@ var translate = function(message, lang, to, callback) {
   }
 };
 var hook = function(sockets) {
-  socket = sockets[Math.floor(Math.random() * 2)];
+  var socket = sockets[Math.floor(Math.random() * 2)];
   if (sockets[0] && sockets[1]) {
-    say = interjections[Math.floor(Math.random() * interjections.length + 1)];
-    for (i in say) {
-      translate(say[i], 'en', socket.lang, function(message) {
+    var say = interjections[Math.floor(Math.random() * interjections.length + 1)];
+    var send = function(message) {
         socket.send(message);
-      });
+      };
+    for (var i in say) {
+      translate(say[i], 'en', socket.lang, send);
     }
   }
 };
@@ -372,7 +373,7 @@ var interjections = [
 var store = {
   get: function(key) {
      var value;
-     path = '/tmp/station_translator_' + key;
+     var path = '/tmp/station_translator_' + key;
      if (fs.existsSync(path)) {
        value = fs.readFileSync(path, 'utf8')
      } else {
@@ -381,7 +382,7 @@ var store = {
      return value;
   },
   set: function(key, value) {
-    path = '/tmp/station_translator_' + key;
+    var path = '/tmp/station_translator_' + key;
     fs.writeFileSync(path, value, 'utf8')
   }
 }
