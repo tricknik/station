@@ -14,7 +14,7 @@ var rack = require('hat').rack();
 
 io.configure(function() {
   io.set("transports", ["xhr-polling"]);
-  io.set("polling duration", 10);
+  io.set("polling duration", 12);
 });
 
 app.configure(function(){
