@@ -83,7 +83,7 @@ io.configure(function (){
     callback(null, true); 
   });
   io.set("transports", ["xhr-polling"]);
-  io.set("polling duration", 12);
+  io.set("polling duration", 6);
 });
 
 var startBridge = function(bridge) {
