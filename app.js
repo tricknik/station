@@ -71,7 +71,7 @@ app.get('/console/:bridge/:leg', function(req, res) {
 app.get('/filter', routes.filter);
 app.get('/__broadcast__', routes.broadcast);
 
-app.listen(3000, function() {
+app.listen(5000, function() {
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
 });
 
