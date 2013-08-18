@@ -12,11 +12,6 @@ var rack = require('hat').rack();
 
 // CONFIGURATION
 
-io.configure(function() {
-  io.set("transports", ["xhr-polling"]);
-  io.set("polling duration", 12);
-});
-
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
@@ -87,6 +82,8 @@ io.configure(function (){
     handshakeData.stationId = rack();
     callback(null, true); 
   });
+  io.set("transports", ["xhr-polling"]);
+  io.set("polling duration", 12);
 });
 
 var startBridge = function(bridge) {
