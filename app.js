@@ -377,7 +377,7 @@ var interjections = [
 var store = {
   get: function(key) {
      var value;
-     var path = '/tmp/station_translator_' + key;
+     var path = './tmp/station_translator_' + key;
      if (fs.existsSync(path)) {
        value = fs.readFileSync(path, 'utf8')
      } else {
