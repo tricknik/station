@@ -12,6 +12,10 @@ var rack = require('hat').rack();
 
 // CONFIGURATION
 
+io.configure(function() {
+  io.set("transports", ["xhr-polling"]);
+  io.set("polling duration", 10);
+});
 
 app.configure(function(){
   app.set('views', __dirname + '/views');
